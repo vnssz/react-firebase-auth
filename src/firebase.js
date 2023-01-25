@@ -31,6 +31,6 @@ const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const google = new GoogleAuthProvider();
 export const facebook = new FacebookAuthProvider();
-export const twitter = new TwitterAuthProvider();
+
 export const github = new GithubAuthProvider();
 

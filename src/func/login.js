@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import { Link } from "react-router-dom";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
@@ -6,16 +6,19 @@ import { Form, Field } from "react-final-form";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { Password } from "primereact/password";
-
+import useAuth,{logout } from "../firebase/useAuth";
 //import firebase function
-import { auth, google, facebook, twitter, github } from "../firebase";
+import { auth, google, facebook, github } from "../firebase";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
 
+
+
 export const Login = () => {
+  const currentUser = useAuth();
   const [showMessage, setShowMessage] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -82,6 +85,7 @@ export const Login = () => {
 
     setUser(formData);
     setIsLogin(true);
+  
     // console.log(result);
   };
 

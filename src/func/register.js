@@ -10,8 +10,12 @@ import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
 
 
-import { auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { auth, google, facebook, github } from "../firebase";
 
 export const Register = () => {
   const [showMessage, setShowMessage] = useState(false);
@@ -51,8 +55,9 @@ export const Register = () => {
   const onSubmit = (data, form) => {
     setFormData(data);
     setShowMessage(true);
-   createUserWithEmailAndPassword(auth, formData)
-     .then((formData) => {
+   createUserWithEmailAndPassword(auth, formData.email,formData.password)
+     .then((userformData) => {
+         const user = userformData.user;
        console.log(formData);
      })
      .catch((error) => {
@@ -60,6 +65,27 @@ export const Register = () => {
      });
     form.restart();
   };
+
+   const login = async (provider) => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const formData = GoogleAuthProvider.formDataFromResult(result);
+        const token = formData.accessToken;
+        // The signed-in user info.
+        const user = result.formData;
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.formData.email;
+        // The AuthFormformData type that was used.
+        const formData = GoogleAuthProvider.formDataFromError(error);
+        // ...
+      });}
 
   const isFormFieldValid = (meta) => !!(meta.touched && meta.error);
   const getFormErrorMessage = (meta) => {
@@ -246,6 +272,7 @@ export const Register = () => {
                 icon="pi pi-google"
                 className="p-button-rounded"
                 aria-label="Google"
+                onClick={() => login(google)}
               />
             </div>
             <div className="col-3">
@@ -253,6 +280,9 @@ export const Register = () => {
                 icon="pi pi-github"
                 className="p-button-rounded"
                 aria-label="Github"
+                onClick={() => {
+                  login(github);
+                }}
               />
             </div>
             <div className="col-3">
@@ -267,6 +297,7 @@ export const Register = () => {
                 icon="pi pi-facebook"
                 className="p-button-rounded "
                 aria-label="Facebook"
+                onClick={() => login(facebook)}
               />
             </div>
           </div>

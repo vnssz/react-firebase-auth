@@ -1,7 +1,9 @@
 import { Menubar } from "primereact/menubar";
 import React from "react";
+import useAuth from "../firebase/useAuth";
 
 const Navbar = () => {
+  
   const items = [
     {
       label: "Home",
