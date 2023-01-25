@@ -7,9 +7,25 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { Password } from "primereact/password";
 
+//import firebase function
+import { auth, google, facebook, twitter, github } from "../firebase";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+
 export const Login = () => {
   const [showMessage, setShowMessage] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    accept: true,
+  });
+
+  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState(null);
 
   const validate = (data) => {
     let errors = {};
@@ -29,8 +45,44 @@ export const Login = () => {
   const onSubmit = (data, form) => {
     setFormData(data);
     setShowMessage(true);
+    signInWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((userFormData) => {
+        const user = userFormData.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     console.log(formData);
     form.restart();
+  };
+
+ 
+
+  const login = async (provider) => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const formData = GoogleAuthProvider.formDataFromResult(result);
+        const token = formData.accessToken;
+        // The signed-in user info.
+        const user = result.formData;
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.formData.email;
+        // The AuthFormformData type that was used.
+        const formData = GoogleAuthProvider.formDataFromError(error);
+        // ...
+      });
+
+    setUser(formData);
+    setIsLogin(true);
+    // console.log(result);
   };
 
   const isFormFieldValid = (meta) => !!(meta.touched && meta.error);
@@ -80,9 +132,7 @@ export const Login = () => {
               name: "",
               email: "",
               password: "",
-              date: null,
-              country: null,
-              accept: false,
+              accept: true,
             }}
             validate={validate}
             render={({ handleSubmit }) => (
@@ -95,6 +145,7 @@ export const Login = () => {
                         <i className="pi pi-envelope" />
                         <InputText
                           id="email"
+                          value={formData.email}
                           {...input}
                           className={classNames({
                             "p-invalid": isFormFieldValid(meta),
@@ -120,6 +171,7 @@ export const Login = () => {
                       <span className="p-float-label">
                         <Password
                           id="password"
+                          value={formData.password}
                           {...input}
                           toggleMask
                           className={classNames({
@@ -142,39 +194,42 @@ export const Login = () => {
                 <Button type="submit" label="Submit" className="mt-2" />
 
                 <br></br>
-                <div className="flex align-items-center justify-content-center">
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-google"
-                      className="p-button-rounded"
-                      aria-label="Google"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-github"
-                      className="p-button-rounded"
-                      aria-label="Github"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-microsoft"
-                      className="p-button-rounded"
-                      aria-label="Microsoft"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-facebook"
-                      className="p-button-rounded "
-                      aria-label="Facebook"
-                    />
-                  </div>
-                </div>
               </form>
             )}
           />
+          <div className="flex align-items-center justify-content-center">
+            <div className="col-3">
+              <Button
+                icon="pi pi-google"
+                className="p-button-rounded"
+                aria-label="Google"
+                onClick={() => login(google)}
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-github"
+                className="p-button-rounded"
+                aria-label="Github"
+                onClick={() => {login(github)}}
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-microsoft"
+                className="p-button-rounded"
+                aria-label="Microsoft"
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-facebook"
+                className="p-button-rounded "
+                aria-label="Facebook"
+                onClick={() => login(facebook)}
+              />
+            </div>
+          </div>
           <div className="forgot-password-div">
             <Link
               className="forgot-password-link"

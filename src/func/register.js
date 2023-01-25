@@ -3,23 +3,26 @@ import { Link } from "react-router-dom";
 import { Form, Field } from "react-final-form";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
-// import { Calendar } from "primereact/calendar";
 import { Password } from "primereact/password";
 import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
-// import { CountryService } from "./services/countryService.js";
+
+
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export const Register = () => {
-//   const [countries, setCountries] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    accept: false,
+  });
 
-//   useEffect(() => {
-//     countryservice.getCountries().then((data) => setCountries(data));
-//   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const validate = (data) => {
     let errors = {};
@@ -48,7 +51,13 @@ export const Register = () => {
   const onSubmit = (data, form) => {
     setFormData(data);
     setShowMessage(true);
-
+   createUserWithEmailAndPassword(auth, formData)
+     .then((formData) => {
+       console.log(formData);
+     })
+     .catch((error) => {
+       console.log(error);
+     });
     form.restart();
   };
 
@@ -117,8 +126,6 @@ export const Register = () => {
               name: "",
               email: "",
               password: "",
-              date: null,
-              country: null,
               accept: false,
             }}
             validate={validate}
@@ -204,22 +211,7 @@ export const Register = () => {
                     </div>
                   )}
                 />
-                {/* <Field name="date" render={({ input }) => (
-                                <div className="field">
-                                    <span className="p-float-label">
-                                        <Calendar id="date" {...input} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
-                                        <label htmlFor="date">Birthday</label>
-                                    </span>
-                                </div>
-                            )} /> */}
-                {/* <Field name="country" render={({ input }) => (
-                                <div className="field">
-                                    <span className="p-float-label">
-                                        <Dropdown id="country" {...input} options={countries} optionLabel="name" />
-                                        <label htmlFor="country">Country</label>
-                                    </span>
-                                </div>
-                            )} /> */}
+
                 <Field
                   name="accept"
                   type="checkbox"
@@ -245,46 +237,45 @@ export const Register = () => {
                 />
 
                 <Button type="submit" label="Submit" className="mt-2" />
-
-                <div className="flex align-items-center justify-content-center">
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-google"
-                      className="p-button-rounded"
-                      aria-label="Google"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-github"
-                      className="p-button-rounded"
-                      aria-label="Github"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-microsoft"
-                      className="p-button-rounded"
-                      aria-label="Microsoft"
-                    />
-                  </div>
-                  <div className="col-3">
-                    <Button
-                      icon="pi pi-facebook"
-                      className="p-button-rounded "
-                      aria-label="Faceboook"
-                    />
-                  </div>
-                </div>
-                <div className="signin-link-div">
-                  Already have an account?{" "}
-                  <Link className="signin-link" to="/login">
-                    Sign in
-                  </Link>
-                </div>
               </form>
             )}
           />
+          <div className="flex align-items-center justify-content-center">
+            <div className="col-3">
+              <Button
+                icon="pi pi-google"
+                className="p-button-rounded"
+                aria-label="Google"
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-github"
+                className="p-button-rounded"
+                aria-label="Github"
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-microsoft"
+                className="p-button-rounded"
+                aria-label="Microsoft"
+              />
+            </div>
+            <div className="col-3">
+              <Button
+                icon="pi pi-facebook"
+                className="p-button-rounded "
+                aria-label="Facebook"
+              />
+            </div>
+          </div>
+          <div className="signin-link-div">
+            Already have an account?{" "}
+            <Link className="signin-link" to="/login">
+              Sign in
+            </Link>
+          </div>
         </div>
       </div>
     </div>
